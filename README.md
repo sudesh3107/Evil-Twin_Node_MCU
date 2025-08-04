@@ -101,7 +101,7 @@ void handleNotFound() {
 }
 ```
 
-> ## Note
+> ### ⚠️ Note
 >  - You can modify certain parameters in the code to fit your requirements:
 >  - **Redirected URL:** Change the URL users are sent to after submitting credentials to match your test scenario.
 >  - **SSID:** Set your own Wi-Fi network name to attract targets or for testing purposes.
