@@ -1,5 +1,7 @@
 # Evil-Twin_Node_MCU
 
+
+
 ```bash
 #include <ESP8266WiFi.h>
 #include <DNSServer.h>
@@ -99,6 +101,18 @@ void handleNotFound() {
 }
 ```
 
+## Note
+- You can modify certain parameters in the code to fit your requirements:
+  - **Redirected URL:** Change the URL users are sent to after submitting credentials to match your test scenario.
+  - **SSID:** Set your own Wi-Fi network name to attract targets or for testing purposes.
+  - **DNS:** Adjust DNS settings if you want to redirect to a different captive portal or server.
+- Make sure to update these variables in the source code before uploading to your NodeMCU device.
+
+## Ethical Considerations
+- **Legal Compliance:** Only test on your own networks
+- **Disclosure:** Add disclaimer to login page in real tests
+- **Data Handling:** Never store captured credentials permanently
+- **Permissions:** Requires written consent for penetration testing
 
 ## Key Components
 
