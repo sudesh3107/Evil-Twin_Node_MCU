@@ -100,6 +100,17 @@ void handleNotFound() {
   handleRoot();
 }
 ```
+> ## ERROR Fix (Linux)
+for ```bash
+A fatal esptool.py error occurred: [Errno 13] could not open port /dev/ttyUSB0: [Errno 13] Permission denied: '/dev/ttyUSB0'esptool.py v3.0
+Serial port /dev/ttyUSB0
+```
+```bash
+sudo usermod -a -G dialout $USER
+newgrp dialout
+groups
+sudo chmod a+rw /dev/ttyUSB0
+```
 
 > ### ⚠️ Note
 >  - You can modify certain parameters in the code to fit your requirements:
